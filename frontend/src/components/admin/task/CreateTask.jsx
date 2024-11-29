@@ -102,11 +102,11 @@ const CreateTask = ({ defaultTask, handleTask, handlerShowTaskList }) => {
   return (
     <form
       onSubmit={handleSubmit}
-      className="space-y-6 bg-white p-6 rounded-lg shadow-md"
+      className="space-y-6 bg-white p-8 rounded-lg shadow-xl max-w-2xl mx-auto"
     >
       {/* Task Title */}
       <div>
-        <label className="block text-sm font-medium text-gray-600 mb-1">
+        <label className="block text-sm font-medium text-gray-700 mb-2">
           Task Title
         </label>
         <input
@@ -115,14 +115,14 @@ const CreateTask = ({ defaultTask, handleTask, handlerShowTaskList }) => {
           value={task.title}
           onChange={handleChange}
           placeholder="Enter task title"
-          className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full p-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           required
         />
       </div>
 
       {/* Task Description */}
       <div>
-        <label className="block text-sm font-medium text-gray-600 mb-1">
+        <label className="block text-sm font-medium text-gray-700 mb-2">
           Description
         </label>
         <textarea
@@ -130,7 +130,7 @@ const CreateTask = ({ defaultTask, handleTask, handlerShowTaskList }) => {
           value={task.description}
           onChange={handleChange}
           placeholder="Describe the task"
-          className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full p-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           rows="4"
           required
         ></textarea>
@@ -138,19 +138,21 @@ const CreateTask = ({ defaultTask, handleTask, handlerShowTaskList }) => {
 
       {/* Assignees */}
       <div>
-        <label className="block text-sm font-medium text-gray-600 mb-1">
+        <label className="block text-sm font-medium text-gray-700 mb-2">
           Assign to Team Members
         </label>
         {loading ? (
-          <p>Loading team members...</p>
+          <div className="text-center text-gray-500">
+            Loading team members...
+          </div>
         ) : (
           <select
             multiple
             name="assignees"
             value={task.assignees}
-            required
             onChange={handleAssigneesChange}
-            className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full p-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required
           >
             {teamMembers.map((member) => (
               <option key={member} value={member}>
@@ -166,15 +168,15 @@ const CreateTask = ({ defaultTask, handleTask, handlerShowTaskList }) => {
 
       {/* Priority */}
       <div>
-        <label className="block text-sm font-medium text-gray-600 mb-1">
+        <label className="block text-sm font-medium text-gray-700 mb-2">
           Priority
         </label>
         <select
           name="priority"
           value={task.priority}
           onChange={handleChange}
+          className="w-full p-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           required
-          className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
           {priorities.map((priority) => (
             <option key={priority.value} value={priority.value}>
@@ -186,7 +188,7 @@ const CreateTask = ({ defaultTask, handleTask, handlerShowTaskList }) => {
 
       {/* Deadline */}
       <div>
-        <label className="block text-sm font-medium text-gray-600 mb-1">
+        <label className="block text-sm font-medium text-gray-700 mb-2">
           Deadline
         </label>
         <input
@@ -194,15 +196,15 @@ const CreateTask = ({ defaultTask, handleTask, handlerShowTaskList }) => {
           name="deadline"
           value={task.deadline}
           onChange={handleChange}
+          className="w-full p-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           required
-          className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>
 
       {/* Submit Button */}
       <button
         type="submit"
-        className="w-full py-3 text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="w-full py-4 text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 ease-in-out"
       >
         {defaultTask ? "Edit" : "Create"} Task
       </button>

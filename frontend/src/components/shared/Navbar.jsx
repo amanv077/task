@@ -39,11 +39,17 @@ const Navbar = () => {
         {/* Logo */}
         <div>
           <Link to="/">
-            <img
+            {/* <img
               src={logo}
               alt="Hiring Booth Logo"
               className="h-10 cursor-pointer"
-            />
+            /> */}
+            <h1 className="text-3xl font-bold tracking-tight text-blue-600 dark:text-blue-400 flex items-center space-x-2">
+              <span className="bg-blue-600 text-white px-2 py-1 rounded-md shadow-lg dark:bg-blue-500">
+                Task
+              </span>
+              <span className="text-gray-800 dark:text-gray-200">Manager</span>
+            </h1>
           </Link>
         </div>
 
@@ -87,7 +93,7 @@ const Navbar = () => {
               </>
             ) : (
               <>
-                <li>
+                {/* <li>
                   <Link to="/" className="hover:text-[#003b8d]">
                     Home
                   </Link>
@@ -106,8 +112,8 @@ const Navbar = () => {
                   <Link to="/browse" className="hover:text-[#003b8d]">
                     Browse
                   </Link>
-                </li>
-                {user && user.role === "student" && (
+                </li> */}
+                {user && user.role === "user" && (
                   <li>
                     <Link to="/counselor" className="hover:text-[#003b8d]">
                       Your Counselor
@@ -190,8 +196,8 @@ const Navbar = () => {
         {/* Mobile Menu */}
         {menuOpen && (
           <div className="absolute top-16 left-0 w-full bg-white shadow-md lg:hidden">
-            <ul className="flex flex-col items-center gap-4 py-4 text-[#004aad] font-semibold">
-              {user && user.role === "recruiter" ? (
+            {/* <ul className="flex flex-col items-center gap-4 py-4 text-[#004aad] font-semibold">
+              {user && user.role === "admin" ? (
                 <>
                   <li>
                     <Link
@@ -249,7 +255,7 @@ const Navbar = () => {
                   )}
                 </>
               )}
-            </ul>
+            </ul> */}
             <div className="flex flex-col items-center gap-4 py-4">
               {!user ? (
                 <>

@@ -2,7 +2,38 @@ import PropTypes from "prop-types";
 import { useState } from "react";
 
 const TaskCard = ({ task, isLoading, handleTask }) => {
+  const [buttonText, setButtonText] = useState("Mark Complete");
+
   if (isLoading === task._id) buttonText = "Loading...";
+
+  const getPriorityBadge = (priority) => {
+    switch (priority) {
+      case "High":
+        return (
+          <span className="px-2 py-1 text-sm font-medium text-white bg-red-600 rounded-full">
+            High
+          </span>
+        );
+      case "Medium":
+        return (
+          <span className="px-2 py-1 text-sm font-medium text-white bg-orange-400 rounded-full">
+            Medium
+          </span>
+        );
+      case "Low":
+        return (
+          <span className="px-2 py-1 text-sm font-medium text-white bg-green-500 rounded-full">
+            Low
+          </span>
+        );
+      default:
+        return (
+          <span className="px-2 py-1 text-sm font-medium text-white bg-gray-400 rounded-full">
+            Unknown
+          </span>
+        );
+    }
+  };
 
   return (
     <div className="w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
@@ -20,13 +51,38 @@ const TaskCard = ({ task, isLoading, handleTask }) => {
           Delete
         </button>
       </div>
-      <div className="flex flex-col items-center pb-10">
+      <div className="flex flex-col items-center pb-10 px-6">
         <h5 className="mb-1 text-xl font-medium text-gray-900 dark:text-white">
           {task.title}
         </h5>
         <span className="text-sm text-gray-500 dark:text-gray-400">
           {task.description}
         </span>
+
+        {/* Priority Badge */}
+        <div className="mt-2">{getPriorityBadge(task.priority)}</div>
+
+        {/* Assignees */}
+        <div className="mt-2">
+          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            Assigned to:{" "}
+          </span>
+          <span className="text-sm text-gray-500 dark:text-gray-400">
+            {task.assignees.join(", ")}
+          </span>
+        </div>
+
+        {/* Deadline */}
+        <div className="mt-2">
+          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            Deadline:{" "}
+          </span>
+          <span className="text-sm text-gray-500 dark:text-gray-400">
+            {new Date(task.deadline).toLocaleDateString()}
+          </span>
+        </div>
+
+        {/* Task Status and Action Button */}
         <div className="flex mt-4 md:mt-6">
           <button
             disabled={isLoading === task._id}
@@ -45,10 +101,17 @@ const TaskCard = ({ task, isLoading, handleTask }) => {
   );
 };
 
-TaskCard.proptypes = {
+TaskCard.propTypes = {
   task: PropTypes.shape({
-    title: PropTypes.string,
-    status: PropTypes.string,
+    title: PropTypes.string.isRequired,
+    description: PropTypes.string.isRequired,
+    assignees: PropTypes.arrayOf(PropTypes.string).isRequired,
+    deadline: PropTypes.string.isRequired,
+    priority: PropTypes.string.isRequired,
+    status: PropTypes.string.isRequired,
   }).isRequired,
+  isLoading: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
+  handleTask: PropTypes.func.isRequired,
 };
+
 export default TaskCard;

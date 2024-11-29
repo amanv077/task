@@ -9,11 +9,19 @@ const Footer = () => {
           {/* Logo Section */}
           <div className="mb-6 md:mb-0 text-center sm:text-left">
             <Link to="/">
-              <img
+              {/* <img
                 src={logo}
                 alt="Hiring Booth Logo"
                 className="h-20 cursor-pointer mx-auto sm:mx-0"
-              />
+              /> */}
+              <h1 className="text-3xl font-bold tracking-tight text-blue-600 dark:text-blue-400 flex items-center space-x-2">
+                <span className="bg-blue-600 text-white px-2 py-1 rounded-md shadow-lg dark:bg-blue-500">
+                  Task
+                </span>
+                <span className="text-gray-800 dark:text-gray-200">
+                  Manager
+                </span>
+              </h1>
             </Link>
           </div>
 
@@ -97,7 +105,7 @@ const Footer = () => {
           <span className="text-sm text-gray-500 sm:text-center dark:text-gray-400">
             © {new Date().getFullYear()}{" "}
             <a href="https://hiringbooth.in/" className="hover:underline">
-              Hiring-Booth
+              Task Manager
             </a>
             . All Rights Reserved.
           </span>
