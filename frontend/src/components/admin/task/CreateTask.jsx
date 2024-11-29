@@ -1,4 +1,4 @@
-import { TASK_API_END_POINT } from "@/utils/constant"; // Adjust path if necessary
+import { TASK_API_END_POINT, USER_API_END_POINT } from "@/utils/constant"; // Adjust path if necessary
 import { useEffect, useState } from "react";
 
 const emptyTaskData = {
@@ -16,20 +16,44 @@ function formatDateForInput(dateString) {
 
 const CreateTask = ({ defaultTask, handleTask, handlerShowTaskList }) => {
   const [task, setTask] = useState(defaultTask || emptyTaskData);
+  const [teamMembers, setTeamMembers] = useState([]); // State for fetched team members
+  const [loading, setLoading] = useState(false); // State for loading indication
 
-  const teamMembers = ["Alice", "Bob", "Charlie", "Diana"]; // Example team members
   const priorities = [
     { label: "High", value: "High", color: "bg-red-500 text-white" },
     { label: "Medium", value: "Medium", color: "bg-orange-400 text-white" },
     { label: "Low", value: "Low", color: "bg-green-500 text-white" },
   ];
 
-  // Handle input field changes
+  // Fetch team members from the backend
+  useEffect(() => {
+    const fetchTeamMembers = async () => {
+      setLoading(true);
+      try {
+        const response = await fetch(USER_API_END_POINT);
+        const data = await response.json();
+
+        if (data.success) {
+          // Filter users by role
+          const users = data.users.filter((user) => user.role === "user");
+          setTeamMembers(users.map((user) => user.fullname)); // Assuming the API returns 'name' field for each user
+        } else {
+          console.error("Error fetching users:", data.message);
+        }
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTeamMembers();
+  }, []);
+
   const handleChange = (e) => {
     setTask({ ...task, [e.target.name]: e.target.value });
   };
 
-  // Handle assignees multi-select change
   const handleAssigneesChange = (e) => {
     const selectedOptions = Array.from(
       e.target.selectedOptions,
@@ -38,13 +62,13 @@ const CreateTask = ({ defaultTask, handleTask, handlerShowTaskList }) => {
     setTask({ ...task, assignees: selectedOptions });
   };
 
-  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (defaultTask) {
       handleTask("update-task", { ...defaultTask, ...task });
     }
+
     try {
       const response = await fetch(TASK_API_END_POINT, {
         method: "POST",
@@ -59,7 +83,6 @@ const CreateTask = ({ defaultTask, handleTask, handlerShowTaskList }) => {
         console.log("Task Created:", data.task);
         setTask(emptyTaskData);
         handlerShowTaskList();
-        // Handle successful task creation (e.g., clear form, display message)
       } else {
         console.error("Error creating task:", data.message);
       }
@@ -81,10 +104,6 @@ const CreateTask = ({ defaultTask, handleTask, handlerShowTaskList }) => {
       onSubmit={handleSubmit}
       className="space-y-6 bg-white p-6 rounded-lg shadow-md"
     >
-      {/* <h2 className="text-2xl font-bold text-gray-800">
-        {defaultTask ? "Edit Task" : "Create New Task"}
-      </h2> */}
-
       {/* Task Title */}
       <div>
         <label className="block text-sm font-medium text-gray-600 mb-1">
@@ -122,20 +141,24 @@ const CreateTask = ({ defaultTask, handleTask, handlerShowTaskList }) => {
         <label className="block text-sm font-medium text-gray-600 mb-1">
           Assign to Team Members
         </label>
-        <select
-          multiple
-          name="assignees"
-          value={task.assignees}
-          required
-          onChange={handleAssigneesChange}
-          className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-        >
-          {teamMembers.map((member) => (
-            <option key={member} value={member}>
-              {member}
-            </option>
-          ))}
-        </select>
+        {loading ? (
+          <p>Loading team members...</p>
+        ) : (
+          <select
+            multiple
+            name="assignees"
+            value={task.assignees}
+            required
+            onChange={handleAssigneesChange}
+            className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            {teamMembers.map((member) => (
+              <option key={member} value={member}>
+                {member}
+              </option>
+            ))}
+          </select>
+        )}
         <p className="text-xs text-gray-500 mt-1">
           Hold Ctrl (Windows) or Command (Mac) to select multiple.
         </p>
@@ -154,11 +177,7 @@ const CreateTask = ({ defaultTask, handleTask, handlerShowTaskList }) => {
           className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
           {priorities.map((priority) => (
-            <option
-              key={priority.value}
-              value={priority.value}
-              className={priority.color}
-            >
+            <option key={priority.value} value={priority.value}>
               {priority.label}
             </option>
           ))}

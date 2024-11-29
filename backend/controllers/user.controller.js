@@ -1,26 +1,27 @@
-import { User } from "../models/user.model.js";
+// import { User } from "../models/user.model.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import getDataUri from "../utils/datauri.js";
 import cloudinary from "../utils/cloudinary.js";
+import User from "../models/user.model.js";
+
+// Helper function to send a standardized error response
+const sendErrorResponse = (res, message, statusCode = 500) => {
+  return res.status(statusCode).json({ success: false, message });
+};
 
 // Register a new user
 export const register = async (req, res) => {
   try {
     const { fullname, email, phoneNumber, password, role } = req.body;
-    console.log(req.body);
+
     if (!fullname || !email || !phoneNumber || !password || !role) {
-      return res
-        .status(400)
-        .json({ message: "All fields are required.", success: false });
+      return sendErrorResponse(res, "All fields are required.", 400);
     }
 
     const existingUser = await User.findOne({ email });
-    console.log({ existingUser });
     if (existingUser) {
-      return res
-        .status(400)
-        .json({ message: "Email already in use.", success: false });
+      return sendErrorResponse(res, "Email already in use.", 400);
     }
 
     let profilePhotoUrl = "";
@@ -37,9 +38,7 @@ export const register = async (req, res) => {
         profilePhotoUrl = uploadResponse.secure_url;
       } catch (err) {
         console.error("Error uploading profile photo:", err);
-        return res
-          .status(500)
-          .json({ message: "Failed to upload profile photo.", success: false });
+        return sendErrorResponse(res, "Failed to upload profile photo.");
       }
     }
 
@@ -53,8 +52,9 @@ export const register = async (req, res) => {
       role,
       profile: { profilePhoto: profilePhotoUrl },
     });
-    console.log({ newUser });
+
     return res.status(201).json({
+      success: true,
       message: "Account created successfully.",
       user: {
         id: newUser._id,
@@ -63,14 +63,10 @@ export const register = async (req, res) => {
         role: newUser.role,
         profile: newUser.profile,
       },
-      success: true,
     });
   } catch (err) {
     console.error("Registration error:", err);
-    return res.status(500).json({
-      message: "An error occurred. Please try again.",
-      success: false,
-    });
+    return sendErrorResponse(res, "An error occurred. Please try again.");
   }
 };
 
@@ -80,23 +76,20 @@ export const login = async (req, res) => {
     const { email, password, role } = req.body;
 
     if (!email || !password || !role) {
-      return res
-        .status(400)
-        .json({ message: "All fields are required.", success: false });
+      return sendErrorResponse(res, "All fields are required.", 400);
     }
 
     const user = await User.findOne({ email });
     if (!user || !(await bcrypt.compare(password, user.password))) {
-      return res
-        .status(400)
-        .json({ message: "Invalid email or password.", success: false });
+      return sendErrorResponse(res, "Invalid email or password.", 400);
     }
 
     if (user.role !== role) {
-      return res.status(400).json({
-        message: "Role mismatch. Check your login credentials.",
-        success: false,
-      });
+      return sendErrorResponse(
+        res,
+        "Role mismatch. Check your credentials.",
+        400
+      );
     }
 
     const token = jwt.sign({ userId: user._id }, process.env.SECRET_KEY, {
@@ -111,39 +104,35 @@ export const login = async (req, res) => {
         sameSite: "strict",
       })
       .json({
+        success: true,
         message: `Welcome back, ${user.fullname}`,
         user,
-        success: true,
       });
   } catch (err) {
     console.error("Login error:", err);
-    return res.status(500).json({
-      message: "An error occurred. Please try again.",
-      success: false,
-    });
+    return sendErrorResponse(res, "An error occurred. Please try again.");
   }
 };
 
 // Logout a user
 export const logout = (req, res) => {
   return res.status(200).cookie("token", "", { maxAge: 0 }).json({
-    message: "Logged out successfully.",
     success: true,
+    message: "Logged out successfully.",
   });
 };
 
 // Update user profile
 export const updateProfile = async (req, res) => {
   try {
-    const { fullname, email, phoneNumber, bio, skills, ...rest } = req.body;
-    const userId = req.id;
-
+    const userId = req.id; // Ensure middleware sets this
     const user = await User.findById(userId);
+
     if (!user) {
-      return res
-        .status(404)
-        .json({ message: "User not found.", success: false });
+      return sendErrorResponse(res, "User not found.", 404);
     }
+
+    const { fullname, email, phoneNumber, bio, skills, ...rest } = req.body;
 
     if (fullname) user.fullname = fullname;
     if (email) user.email = email;
@@ -151,7 +140,6 @@ export const updateProfile = async (req, res) => {
     if (bio) user.profile.bio = bio;
     if (skills) user.profile.skills = skills.split(",");
 
-    // Handle file uploads
     if (req.file) {
       try {
         const fileUri = getDataUri(req.file);
@@ -164,28 +152,23 @@ export const updateProfile = async (req, res) => {
         user.profile.profilePhoto = uploadResponse.secure_url;
       } catch (err) {
         console.error("File upload error:", err);
-        return res
-          .status(500)
-          .json({ message: "Failed to upload photo.", success: false });
+        return sendErrorResponse(res, "Failed to upload profile photo.");
       }
     }
 
-    // Update remaining fields in the `profile` object dynamically
     Object.keys(rest).forEach((key) => {
       if (rest[key]) user.profile[key] = rest[key];
     });
 
     await user.save();
     return res.status(200).json({
+      success: true,
       message: "Profile updated successfully.",
       user,
-      success: true,
     });
   } catch (err) {
     console.error("Update profile error:", err);
-    return res
-      .status(500)
-      .json({ message: "Failed to update profile.", success: false });
+    return sendErrorResponse(res, "Failed to update profile.");
   }
 };
 
@@ -196,19 +179,30 @@ export const deleteUser = async (req, res) => {
 
     const user = await User.findByIdAndDelete(userId);
     if (!user) {
-      return res
-        .status(404)
-        .json({ message: "User not found.", success: false });
+      return sendErrorResponse(res, "User not found.", 404);
     }
 
-    return res
-      .status(200)
-      .json({ message: "User deleted successfully.", success: true });
+    return res.status(200).json({
+      success: true,
+      message: "User deleted successfully.",
+    });
   } catch (err) {
     console.error("Delete user error:", err);
-    return res
-      .status(500)
-      .json({ message: "Failed to delete user.", success: false });
+    return sendErrorResponse(res, "Failed to delete user.");
+  }
+};
+
+// Get all users
+export const getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find({ role: "user" });
+    return res.status(200).json({
+      success: true,
+      users,
+    });
+  } catch (err) {
+    console.error("Error fetching users:", err);
+    return sendErrorResponse(res, "Failed to fetch users.");
   }
 };
 
@@ -218,9 +212,7 @@ export const createUser = async (req, res) => {
     const { fullname, email, phoneNumber, password, role } = req.body;
 
     if (!fullname || !email || !phoneNumber || !password || !role) {
-      return res
-        .status(400)
-        .json({ message: "All fields are required.", success: false });
+      return sendErrorResponse(res, "All fields are required.", 400);
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -233,14 +225,12 @@ export const createUser = async (req, res) => {
     });
 
     return res.status(201).json({
+      success: true,
       message: "User created successfully.",
       user: newUser,
-      success: true,
     });
   } catch (err) {
     console.error("Create user error:", err);
-    return res
-      .status(500)
-      .json({ message: "Failed to create user.", success: false });
+    return sendErrorResponse(res, "Failed to create user.");
   }
 };

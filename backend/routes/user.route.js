@@ -6,6 +6,7 @@ import {
   updateProfile,
   deleteUser,
   createUser,
+  getAllUsers,
 } from "../controllers/user.controller.js";
 import isAuthenticated from "../middlewares/isAuthenticated.js";
 import { singleUpload } from "../middlewares/mutler.js";
@@ -53,5 +54,6 @@ router.delete("/user/delete/:userId", isAuthenticated, deleteUser);
  * @access  Private (Requires Authentication, Role Validation Recommended)
  */
 router.post("/user/create", isAuthenticated, createUser);
+router.get("/", getAllUsers); // Handle GET /api/v1/user
 
 export default router;
