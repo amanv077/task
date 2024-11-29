@@ -122,6 +122,64 @@ export const logout = (req, res) => {
   });
 };
 
+// Update a user by ID
+export const updateUser = async (req, res) => {
+  try {
+    const { userId } = req.params; // Get the userId from the URL params
+    const { fullname, email, phoneNumber, role, password } = req.body;
+
+    // Check if the required fields are provided
+    if (!fullname || !email || !phoneNumber || !role) {
+      return sendErrorResponse(res, "All fields are required.", 400);
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return sendErrorResponse(res, "User not found.", 404);
+    }
+
+    // Update the user data
+    user.fullname = fullname;
+    user.email = email;
+    user.phoneNumber = phoneNumber;
+    user.role = role;
+
+    // If the password is provided, hash it before updating
+    if (password) {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      user.password = hashedPassword;
+    }
+
+    // If the user provides a new profile photo, upload it
+    if (req.file) {
+      try {
+        const fileUri = getDataUri(req.file);
+        const uploadResponse = await cloudinary.uploader.upload(
+          fileUri.content,
+          {
+            folder: "user_profiles",
+          }
+        );
+        user.profile.profilePhoto = uploadResponse.secure_url;
+      } catch (err) {
+        console.error("Error uploading profile photo:", err);
+        return sendErrorResponse(res, "Failed to upload profile photo.");
+      }
+    }
+
+    await user.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "User updated successfully.",
+      user,
+    });
+  } catch (err) {
+    console.error("Update user error:", err);
+    return sendErrorResponse(res, "Failed to update user.");
+  }
+};
+
 // Update user profile
 export const updateProfile = async (req, res) => {
   try {
@@ -169,6 +227,36 @@ export const updateProfile = async (req, res) => {
   } catch (err) {
     console.error("Update profile error:", err);
     return sendErrorResponse(res, "Failed to update profile.");
+  }
+};
+
+// In your user.controller.js
+
+// Controller to get user details by userId
+export const getUserById = async (req, res) => {
+  try {
+    const { userId } = req.params; // Get userId from URL params
+
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // Send user details as the response
+    return res.status(200).json({
+      success: true,
+      user,
+    });
+  } catch (err) {
+    console.error("Error fetching user:", err);
+    return res.status(500).json({
+      success: false,
+      message: "An error occurred while fetching the user",
+    });
   }
 };
 

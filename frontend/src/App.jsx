@@ -26,6 +26,7 @@ import UserDashboard from "./components/user/UserDashboard";
 import Tasks from "./components/admin/task/Tasks";
 import ManageTeam from "./components/admin/team/ManageTeam";
 import CreateUser from "./components/admin/team/CreateUser";
+import EditUser from "./components/admin/team/EditUser";
 
 // Layout Component for Navbar and Header
 function Layout() {
@@ -84,6 +85,10 @@ const appRouter = createBrowserRouter([
       {
         path: "/create-user",
         element: <CreateUser />,
+      },
+      {
+        path: "/edit-user/:userId",
+        element: <EditUser />,
       },
       {
         path: "/about-us",

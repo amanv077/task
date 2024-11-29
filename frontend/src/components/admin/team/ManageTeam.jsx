@@ -37,10 +37,8 @@ const ManageTeam = () => {
   const deleteUser = async (userId) => {
     if (window.confirm("Are you sure you want to delete this user?")) {
       try {
-        // Show loading indicator or disable button
         setLoading(true);
 
-        // Send DELETE request to the server
         const response = await fetch(
           `${USER_API_END_POINT}/user/delete/${userId}`,
           {
@@ -55,27 +53,23 @@ const ManageTeam = () => {
         const data = await response.json();
 
         if (data.success) {
-          // If deletion is successful, update the state to remove the user
           setTeamMembers(teamMembers.filter((member) => member._id !== userId));
           alert("User deleted successfully");
         } else {
-          // If there's a failure, show the message returned from the backend
           alert(data.message || "Failed to delete user");
         }
       } catch (error) {
-        // If an error occurs during the request, show an error message
         alert("Error deleting user: " + error.message);
       } finally {
-        // Hide loading indicator or re-enable button
         setLoading(false);
       }
     }
   };
 
-  // Handle Edit User (you could show a modal or navigate to another page)
+  // Edit User function (route to EditUser page)
   const editUser = (userId) => {
-    // For now, just alerting. In a real scenario, this would redirect or open a form to edit the user.
-    alert(`Editing user with ID: ${userId}`);
+    // Navigate to the EditUser page, passing userId as a parameter
+    window.location.href = `/edit-user/${userId}`; // Redirecting manually for simplicity
   };
 
   return (
@@ -83,7 +77,7 @@ const ManageTeam = () => {
       <div className="flex justify-between mb-4">
         <h2 className="text-xl font-semibold">Team Members</h2>
         <Link
-          to="/create-user" // Add the route for creating a new user
+          to="/create-user"
           className="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 transition"
         >
           Create User
@@ -97,14 +91,14 @@ const ManageTeam = () => {
       ) : (
         <div>
           {teamMembers.length === 0 ? (
-            <p>No users available</p> // Show when no team members exist
+            <p>No users available</p>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {teamMembers.map((member) => (
                 <UserCard
                   key={member._id}
                   member={member}
-                  onEdit={() => editUser(member._id)}
+                  onEdit={() => editUser(member._id)} // Trigger edit when the edit button is clicked
                   onDelete={() => deleteUser(member._id)}
                 />
               ))}

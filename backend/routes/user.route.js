@@ -5,8 +5,10 @@ import {
   register,
   updateProfile,
   deleteUser,
+  getUserById,
   createUser,
   getAllUsers,
+  updateUser, // Import the updateUser controller
 } from "../controllers/user.controller.js";
 import isAuthenticated from "../middlewares/isAuthenticated.js";
 import { singleUpload } from "../middlewares/mutler.js";
@@ -43,18 +45,51 @@ router.get("/logout", logout);
 router.post("/profile/update", isAuthenticated, singleUpload, updateProfile);
 
 /**
+ * @route   PUT /api/v1/user/user/update/:userId
+ * @desc    Update a user by ID (secured for authorized roles)
+ * @access  Private (Requires Authentication, Role Validation Recommended)
+ */
+router.put("/user/update/:userId", isAdmin, singleUpload, updateUser); // Use PUT for update
+
+/**
  * @route   DELETE /api/v1/user/user/delete/:userId
  * @desc    Delete a user by ID (secured for authorized roles)
  * @access  Private (Requires Authentication, Role Validation Recommended)
  */
-// router.delete("/user/delete/:userId", isAuthenticated, deleteUser);
 router.delete("/user/delete/:userId", isAdmin, deleteUser);
+
 /**
  * @route   POST /api/v1/user/user/create
  * @desc    Create a new user (Admin or special use cases)
  * @access  Private (Requires Authentication, Role Validation Recommended)
  */
 router.post("/user/create", isAuthenticated, createUser);
+
 router.get("/", getAllUsers); // Handle GET /api/v1/user
+/**
+ * @route   GET /api/v1/user/:userId
+ * @desc    Get a user by ID
+ * @access  Private (Requires Authentication)
+ */
+router.get("/:userId", getUserById);
+
+// router.get("/user/:userId", isAdmin, async (req, res) => {
+//   try {
+//     const { userId } = req.params;
+//     const user = await User.findById(userId);
+
+//     if (!user) {
+//       return sendErrorResponse(res, "User not found.", 404);
+//     }
+
+//     return res.status(200).json({
+//       success: true,
+//       user,
+//     });
+//   } catch (err) {
+//     console.error("Error fetching user:", err);
+//     return sendErrorResponse(res, "Failed to fetch user.");
+//   }
+// });
 
 export default router;
