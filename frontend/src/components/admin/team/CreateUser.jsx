@@ -6,18 +6,16 @@ const CreateUser = () => {
   const [fullname, setFullname] = useState("");
   const [email, setEmail] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
-  const [password, setPassword] = useState(""); // Password state
-  const [confirmPassword, setConfirmPassword] = useState(""); // Confirm Password state
-  const [role, setRole] = useState("user"); // Default to "user" role
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [role, setRole] = useState("user");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const navigate = useNavigate(); // Use navigate for redirection
+  const navigate = useNavigate();
 
-  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Check if passwords match
     if (password !== confirmPassword) {
       setError("Passwords do not match.");
       return;
@@ -25,9 +23,9 @@ const CreateUser = () => {
 
     setLoading(true);
     try {
-      const response = await fetch(`${USER_API_END_POINT}/user/create`, {
+      const response = await fetch(`${USER_API_END_POINT}/create`, {
         method: "POST",
-        credentials: "include", // Ensure the cookie with token is sent
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
@@ -35,7 +33,7 @@ const CreateUser = () => {
           fullname,
           email,
           phoneNumber,
-          password, // Send password to backend
+          password,
           role,
         }),
       });
@@ -43,7 +41,7 @@ const CreateUser = () => {
       const data = await response.json();
       if (data.success) {
         alert("User created successfully!");
-        navigate("/manage-team"); // Redirect to the manage team page after successful creation
+        navigate("/manage-team");
       } else {
         setError(data.message || "Failed to create user");
       }
@@ -55,75 +53,98 @@ const CreateUser = () => {
   };
 
   return (
-    <div>
-      <h2 className="text-xl font-semibold mb-4">Create New User</h2>
-      <form onSubmit={handleSubmit} className="space-y-4">
+    <div className="max-w-lg mx-auto bg-white shadow-lg rounded-lg p-6 mt-10">
+      <h2 className="text-2xl font-bold text-gray-800 mb-6">Create New User</h2>
+      <form onSubmit={handleSubmit} className="space-y-5">
         <div>
-          <label className="block">Full Name</label>
+          <label className="block text-sm font-medium text-gray-600 mb-1">
+            Full Name
+          </label>
           <input
             type="text"
             value={fullname}
             onChange={(e) => setFullname(e.target.value)}
-            className="w-full p-2 border rounded"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter full name"
             required
           />
         </div>
         <div>
-          <label className="block">Email</label>
+          <label className="block text-sm font-medium text-gray-600 mb-1">
+            Email
+          </label>
           <input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full p-2 border rounded"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter email"
             required
           />
         </div>
         <div>
-          <label className="block">Phone Number</label>
+          <label className="block text-sm font-medium text-gray-600 mb-1">
+            Phone Number
+          </label>
           <input
             type="text"
             value={phoneNumber}
             onChange={(e) => setPhoneNumber(e.target.value)}
-            className="w-full p-2 border rounded"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter phone number"
             required
           />
         </div>
         <div>
-          <label className="block">Password</label>
+          <label className="block text-sm font-medium text-gray-600 mb-1">
+            Password
+          </label>
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full p-2 border rounded"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter password"
             required
           />
         </div>
         <div>
-          <label className="block">Confirm Password</label>
+          <label className="block text-sm font-medium text-gray-600 mb-1">
+            Confirm Password
+          </label>
           <input
             type="password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
-            className="w-full p-2 border rounded"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Confirm password"
             required
           />
         </div>
         <div>
-          <label className="block">Role</label>
+          <label className="block text-sm font-medium text-gray-600 mb-1">
+            Role
+          </label>
           <select
             value={role}
             onChange={(e) => setRole(e.target.value)}
-            className="w-full p-2 border rounded"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="user">User</option>
             <option value="admin">Admin</option>
           </select>
         </div>
-        {error && <p className="text-red-500">{error}</p>}
+        {error && (
+          <p className="text-sm text-red-500 bg-red-100 px-4 py-2 rounded-lg">
+            {error}
+          </p>
+        )}
         <div>
           <button
             type="submit"
-            className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition"
+            className={`w-full py-2 px-4 bg-blue-500 text-white font-medium rounded-lg shadow-md hover:bg-blue-600 transition duration-300 ${
+              loading ? "cursor-not-allowed opacity-75" : ""
+            }`}
             disabled={loading}
           >
             {loading ? "Creating..." : "Create User"}

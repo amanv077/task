@@ -1,92 +1,93 @@
 import PropTypes from "prop-types";
+import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 
 const TaskCard = ({ task, isLoading, handleTask }) => {
   const [buttonText, setButtonText] = useState("Mark Complete");
+  const navigate = useNavigate();
 
-  // if (isLoading === task._id) buttonText = "Loading...";
-
+  // Get Priority Badge
   const getPriorityBadge = (priority) => {
-    switch (priority) {
-      case "High":
-        return (
-          <span className="text-xs font-medium text-white bg-red-600 rounded-full px-2 py-1">
-            High
-          </span>
-        );
-      case "Medium":
-        return (
-          <span className="text-xs font-medium text-white bg-orange-400 rounded-full px-2 py-1">
-            Medium
-          </span>
-        );
-      case "Low":
-        return (
-          <span className="text-xs font-medium text-white bg-green-500 rounded-full px-2 py-1">
-            Low
-          </span>
-        );
-      default:
-        return (
-          <span className="text-xs font-medium text-white bg-gray-400 rounded-full px-2 py-1">
-            Unknown
-          </span>
-        );
-    }
+    const priorityStyles = {
+      High: "bg-red-600",
+      Medium: "bg-orange-400",
+      Low: "bg-green-500",
+      Unknown: "bg-gray-400",
+    };
+    return (
+      <span
+        className={`text-xs font-medium text-white rounded-full px-2 py-1 ${
+          priorityStyles[priority] || priorityStyles.Unknown
+        }`}
+      >
+        {priority}
+      </span>
+    );
   };
 
   return (
-    <div className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 ease-in-out p-3">
-      <div className="relative mb-6">
-        <button
-          className="absolute top-0 left-0 text-xs bg-gray-100 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full px-2 py-1"
-          onClick={() => handleTask("edit-task", task)}
-        >
-          Edit
-        </button>
-        <button
-          className="absolute top-0 right-0 text-xs text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full px-2 py-1 ml-8"
-          onClick={() => handleTask("delete-task", task)}
-        >
-          Delete
-        </button>
-      </div>
-      <div className="text-sm mb-2">
-        <h5 className="text-base font-medium text-gray-900 dark:text-white mb-1">
+    <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-md p-4 space-y-4 overflow-hidden max-w-60">
+      {/* Header Section */}
+      <div className="flex justify-between items-center">
+        <h5 className="text-base font-semibold text-gray-900 dark:text-white truncate">
           {task.title}
         </h5>
-        <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
-          {task.description}
-        </p>
+        {getPriorityBadge(task.priority)}
+      </div>
 
-        {/* Priority Badge */}
-        <div className="mb-2">{getPriorityBadge(task.priority)}</div>
+      {/* Description */}
+      <p className="text-sm text-gray-600 dark:text-gray-400 truncate overflow-hidden">
+        {task.description}
+      </p>
 
-        {/* Assignees */}
-        <div className="mb-1 text-xs text-gray-600 dark:text-gray-400">
+      {/* Additional Info */}
+      <div className="text-xs space-y-1">
+        <p className="text-gray-500 dark:text-gray-400">
           <span className="font-medium">Assigned to:</span>{" "}
           {task.assignees.join(", ")}
-        </div>
-
-        {/* Deadline */}
-        <div className="mb-2 text-xs text-gray-600 dark:text-gray-400">
+        </p>
+        <p className="text-gray-500 dark:text-gray-400">
           <span className="font-medium">Deadline:</span>{" "}
           {new Date(task.deadline).toLocaleDateString()}
-        </div>
-
-        {/* Task Status and Action Button */}
-        <button
-          disabled={isLoading === task._id}
-          onClick={() => handleTask("toggle-status", task)}
-          className={`w-full text-xs font-medium py-1 px-3 rounded-lg transition-colors duration-200 ease-in-out focus:outline-none ${
-            task.status === "Completed"
-              ? "bg-blue-600 text-white hover:bg-blue-700"
-              : "bg-transparent border border-gray-300 text-gray-600 hover:bg-gray-100 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
-          }`}
-        >
-          {task.status === "Pending" ? "Mark Complete" : "Reopen"}
-        </button>
+        </p>
       </div>
+
+      {/* Action Buttons */}
+      <div className="flex justify-between items-center">
+        <button
+          className="text-sm text-blue-600 hover:text-blue-800 underline focus:outline-none"
+          onClick={() => navigate(`/task/${task._id}`)}
+        >
+          Details
+        </button>
+        <div className="flex space-x-2">
+          <button
+            onClick={() => handleTask("edit-task", task)}
+            className="text-xs text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 px-3 py-1 rounded focus:outline-none"
+          >
+            Edit
+          </button>
+          <button
+            onClick={() => handleTask("delete-task", task)}
+            className="text-xs text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 px-3 py-1 rounded focus:outline-none"
+          >
+            Delete
+          </button>
+        </div>
+      </div>
+
+      {/* Status Action */}
+      <button
+        disabled={isLoading === task._id}
+        onClick={() => handleTask("toggle-status", task)}
+        className={`w-full text-xs font-medium py-2 rounded-lg transition-all focus:outline-none ${
+          task.status === "Completed"
+            ? "bg-green-600 text-white hover:bg-green-700"
+            : "bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
+        }`}
+      >
+        {task.status === "Pending" ? "Mark Complete" : "Reopen"}
+      </button>
     </div>
   );
 };

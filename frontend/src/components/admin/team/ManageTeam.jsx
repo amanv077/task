@@ -17,9 +17,8 @@ const ManageTeam = () => {
         const data = await response.json();
 
         if (data.success) {
-          // Filter users by role and map their fullnames
           const users = data.users.filter((user) => user.role === "user");
-          setTeamMembers(users); // Store whole user data for editing/deleting purposes
+          setTeamMembers(users);
         } else {
           setError(data.message || "Error fetching users");
         }
@@ -31,7 +30,7 @@ const ManageTeam = () => {
     };
 
     fetchTeamMembers();
-  }, []); // Empty dependency array means this effect runs once when the component mounts
+  }, []);
 
   // Handle Delete User
   const deleteUser = async (userId) => {
@@ -43,7 +42,7 @@ const ManageTeam = () => {
           `${USER_API_END_POINT}/user/delete/${userId}`,
           {
             method: "DELETE",
-            credentials: "include", // Ensure the cookie with token is sent
+            credentials: "include",
             headers: {
               "Content-Type": "application/json",
             },
@@ -68,42 +67,43 @@ const ManageTeam = () => {
 
   // Edit User function (route to EditUser page)
   const editUser = (userId) => {
-    // Navigate to the EditUser page, passing userId as a parameter
-    window.location.href = `/edit-user/${userId}`; // Redirecting manually for simplicity
+    window.location.href = `/edit-user/${userId}`;
   };
 
   return (
-    <div>
-      <div className="flex justify-between mb-4">
-        <h2 className="text-xl font-semibold">Team Members</h2>
+    <div className="max-w-7xl mx-auto px-4 py-8">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold text-gray-800">Team Members</h2>
         <Link
           to="/create-user"
-          className="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 transition"
+          className="bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 transition duration-300"
         >
-          Create User
+          + Add New User
         </Link>
       </div>
 
       {loading ? (
-        <p>Loading...</p>
+        <div className="flex justify-center items-center h-64">
+          <p className="text-lg text-gray-500 animate-pulse">Loading...</p>
+        </div>
       ) : error ? (
-        <p>{error}</p>
+        <div className="flex justify-center items-center h-64">
+          <p className="text-red-500 text-lg">{error}</p>
+        </div>
+      ) : teamMembers.length === 0 ? (
+        <div className="flex justify-center items-center h-64">
+          <p className="text-gray-500 text-lg">No team members available.</p>
+        </div>
       ) : (
-        <div>
-          {teamMembers.length === 0 ? (
-            <p>No users available</p>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {teamMembers.map((member) => (
-                <UserCard
-                  key={member._id}
-                  member={member}
-                  onEdit={() => editUser(member._id)} // Trigger edit when the edit button is clicked
-                  onDelete={() => deleteUser(member._id)}
-                />
-              ))}
-            </div>
-          )}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {teamMembers.map((member) => (
+            <UserCard
+              key={member._id}
+              member={member}
+              onEdit={() => editUser(member._id)}
+              onDelete={() => deleteUser(member._id)}
+            />
+          ))}
         </div>
       )}
     </div>

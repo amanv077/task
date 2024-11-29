@@ -321,6 +321,9 @@ export const createUser = async (req, res) => {
     });
   } catch (err) {
     console.error("Create user error:", err);
-    return sendErrorResponse(res, "Failed to create user.");
+    return sendErrorResponse(
+      res,
+      err.data?.message ?? err.message ?? "Failed to create user."
+    );
   }
 };

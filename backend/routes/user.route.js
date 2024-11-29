@@ -63,7 +63,7 @@ router.delete("/user/delete/:userId", isAdmin, deleteUser);
  * @desc    Create a new user (Admin or special use cases)
  * @access  Private (Requires Authentication, Role Validation Recommended)
  */
-router.post("/user/create", isAuthenticated, createUser);
+router.post("/create", createUser);
 
 router.get("/", getAllUsers); // Handle GET /api/v1/user
 /**
