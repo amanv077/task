@@ -21,6 +21,8 @@ import Footer from "./components/shared/Footer";
 import Counselor from "./components/Counselor";
 import AboutUs from "./components/AboutUs";
 import ContactUs from "./components/ContactUs";
+import AdminDashboard from "./components/admin/AdminDashboard";
+import UserDashboard from "./components/user/UserDashboard";
 
 // Layout Component for Navbar and Header
 function Layout() {
@@ -66,6 +68,10 @@ const appRouter = createBrowserRouter([
         element: <ResumeForm />,
       },
       {
+        path: "/user-dashboard",
+        element: <UserDashboard />,
+      },
+      {
         path: "/about-us",
         element: <AboutUs />,
       },
@@ -95,6 +101,14 @@ const appRouter = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <Companies />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/admin-dashboard",
+        element: (
+          <ProtectedRoute>
+            <AdminDashboard />
           </ProtectedRoute>
         ),
       },

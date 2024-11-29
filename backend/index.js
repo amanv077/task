@@ -8,6 +8,7 @@ import companyRoute from "./routes/company.route.js";
 import jobRoute from "./routes/job.route.js";
 import applicationRoute from "./routes/application.route.js";
 import studentsRoute from "./routes/student.route.js";
+import taskRoutes from "./routes/taskRoutes.js";
 
 dotenv.config();
 
@@ -52,6 +53,8 @@ app.use("/api/v1/company", companyRoute);
 app.use("/api/v1/job", jobRoute);
 app.use("/api/v1/application", applicationRoute);
 app.use("/api/v1/students", studentsRoute);
+app.use("/api/tasks", taskRoutes);
+app.use("/api/v1/tasks", taskRoutes); // Add the taskRoutes
 
 // Catch-All Route for Undefined Routes
 app.use((req, res) => {

@@ -36,12 +36,22 @@ const Login = () => {
       });
       if (res.data.success) {
         dispatch(setUser(res.data.user));
-        navigate("/");
+
+        // Redirect based on role
+        const role = res.data.user.role;
+        if (role === "admin") {
+          navigate("/admin-dashboard");
+        } else if (role === "user") {
+          navigate("/user-dashboard");
+        } else {
+          toast.error("Invalid role detected.");
+        }
+
         toast.success(res.data.message);
       }
     } catch (error) {
-      console.log(error);
-      toast.error(error.response.data.message);
+      console.error(error);
+      toast.error(error.response?.data?.message || "Something went wrong.");
     } finally {
       dispatch(setLoading(false));
     }
@@ -49,7 +59,12 @@ const Login = () => {
 
   useEffect(() => {
     if (user) {
-      navigate("/");
+      // Redirect based on user role in useEffect if user exists
+      if (user.role === "admin") {
+        navigate("/admin-dashboard");
+      } else if (user.role === "user") {
+        navigate("/user-dashboard");
+      }
     }
   }, [user, navigate]);
 
