@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
-import User from "../models/user.model.js"; // Import the User model to check roles
+import User from "../models/user.model.js"; // Import User model to check roles
 
-const isAuthenticated = async (req, res, next) => {
+const isAdmin = async (req, res, next) => {
   try {
     // Retrieve token from cookies
     const token = req.cookies.token;
@@ -33,7 +33,7 @@ const isAuthenticated = async (req, res, next) => {
       });
     }
 
-    // Check if the user has an admin role
+    // Check if the user is an admin
     if (user.role !== "admin") {
       return res.status(403).json({
         message: "User not authorized. Admin role required.",
@@ -52,4 +52,4 @@ const isAuthenticated = async (req, res, next) => {
   }
 };
 
-export default isAuthenticated;
+export default isAdmin;

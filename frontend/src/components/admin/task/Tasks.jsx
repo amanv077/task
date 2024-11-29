@@ -133,7 +133,7 @@ function Tasks({ type }) {
   const completedTasks = tasks.filter((task) => task.status === "Completed");
 
   return (
-    <div className="p-6 bg-gray-50 dark:bg-gray-900 min-h-screen">
+    <div className="p-6 bg-white dark:bg-gray-900 min-h-screen">
       {/* <div className="text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:text-gray-400 dark:border-gray-700 mb-4">
         <ul className="flex flex-wrap -mb-px">
           <li className="mr-4">
@@ -176,7 +176,7 @@ function Tasks({ type }) {
         )}
         {activePanel === "show-tasks" && (
           <>
-            <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6">
+            <div className="bg-gray-100 dark:bg-gray-800 shadow-lg rounded-lg p-6 mb-5">
               <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-100 mb-4">
                 Current Tasks
               </h2>
@@ -186,7 +186,7 @@ function Tasks({ type }) {
                 handleTask={handleTask}
               />
             </div>
-            <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6">
+            <div className="bg-gray-100 dark:bg-gray-800 shadow-lg rounded-lg p-6 mt-5">
               <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-100 mb-4">
                 Completed Tasks
               </h2>

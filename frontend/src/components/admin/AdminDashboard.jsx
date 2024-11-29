@@ -3,7 +3,7 @@ import Tasks from "./task/Tasks";
 
 const AdminDashboard = () => {
   return (
-    <div className="flex bg-gray-100 min-h-screen">
+    <div className="flex bg-white min-h-screen">
       <Sidebar />
 
       <div className="flex flex-col flex-grow">

@@ -4,7 +4,7 @@ import { useState } from "react";
 const TaskCard = ({ task, isLoading, handleTask }) => {
   const [buttonText, setButtonText] = useState("Mark Complete");
 
-  if (isLoading === task._id) buttonText = "Loading...";
+  // if (isLoading === task._id) buttonText = "Loading...";
 
   const getPriorityBadge = (priority) => {
     switch (priority) {

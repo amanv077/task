@@ -10,6 +10,7 @@ import {
 } from "../controllers/user.controller.js";
 import isAuthenticated from "../middlewares/isAuthenticated.js";
 import { singleUpload } from "../middlewares/mutler.js";
+import isAdmin from "../middlewares/isAdmin.js";
 
 const router = express.Router();
 
@@ -46,8 +47,8 @@ router.post("/profile/update", isAuthenticated, singleUpload, updateProfile);
  * @desc    Delete a user by ID (secured for authorized roles)
  * @access  Private (Requires Authentication, Role Validation Recommended)
  */
-router.delete("/user/delete/:userId", isAuthenticated, deleteUser);
-
+// router.delete("/user/delete/:userId", isAuthenticated, deleteUser);
+router.delete("/user/delete/:userId", isAdmin, deleteUser);
 /**
  * @route   POST /api/v1/user/user/create
  * @desc    Create a new user (Admin or special use cases)
