@@ -23,6 +23,7 @@ import AboutUs from "./components/AboutUs";
 import ContactUs from "./components/ContactUs";
 import AdminDashboard from "./components/admin/AdminDashboard";
 import UserDashboard from "./components/user/UserDashboard";
+import Tasks from "./components/admin/task/Tasks";
 
 // Layout Component for Navbar and Header
 function Layout() {
@@ -55,6 +56,9 @@ const appRouter = createBrowserRouter([
         path: "/login",
         element: <Login />,
       },
+      { path: "/create-task", element: <Tasks type="create" /> },
+      { path: "/edit-task/:taskId", element: <Tasks type="edit" /> },
+      { path: "/show-tasks", element: <Tasks type="show" /> },
       {
         path: "/signup",
         element: <Signup />,

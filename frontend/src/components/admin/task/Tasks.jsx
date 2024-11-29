@@ -1,26 +1,27 @@
 import CreateTask from "./CreateTask";
 import TaskList from "./TaskList";
-import CompletedTasks from "./CompletedTasks";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { TASK_API_END_POINT } from "@/utils/constant";
 import { toast } from "sonner";
+import { useLocation, useParams } from "react-router-dom";
 
-const inActiveTabCn =
-  "inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300";
+// const inActiveTabCn =
+//   "inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300";
 
-const activeTabCn =
-  "inline-block p-4 text-blue-600 border-b-2 border-blue-600 rounded-t-lg active dark:text-blue-500 dark:border-blue-500";
+// const activeTabCn =
+//   "inline-block p-4 text-blue-600 border-b-2 border-blue-600 rounded-t-lg active dark:text-blue-500 dark:border-blue-500";
 
-function Tasks() {
+function Tasks({ type }) {
+  const { taskId } = useParams();
   const [activeTask, setActiveTask] = useState(null);
   const [tasks, setTasks] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [activePanel, setActivePanel] = useState("create-task");
+  const [activePanel, setActivePanel] = useState("show-tasks");
 
   const handlerShowTaskList = () => setActivePanel("show-tasks");
 
-  const fetchAllApplicants = async (loadingId = true) => {
+  const fetchAllTasks = async (loadingId = true) => {
     setIsLoading(loadingId);
     try {
       const res = await axios.get(`${TASK_API_END_POINT}`, {
@@ -28,6 +29,25 @@ function Tasks() {
       });
 
       if (res.status === 200) setTasks(res.data.tasks);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const fetchATask = async (taskId) => {
+    setIsLoading(taskId);
+    try {
+      const res = await axios.get(`${TASK_API_END_POINT}/${taskId}`, {
+        withCredentials: true,
+      });
+
+      if (res.status === 200) {
+        console.log(res);
+        setActiveTask(res.data.task);
+        setActivePanel("create-task");
+      }
     } catch (error) {
       console.log(error);
     } finally {
@@ -49,7 +69,7 @@ function Tasks() {
       );
       if (res.data.success) {
         toast.success(res.data.message);
-        await fetchAllApplicants(task._id);
+        await fetchAllTasks(task._id);
       }
     } catch (error) {
       toast.error(error.response?.data?.message || "An error occurred");
@@ -61,7 +81,6 @@ function Tasks() {
   };
 
   const handleTask = async (type, task) => {
-    console.log(type, task);
     switch (type) {
       case "edit-task": {
         setActiveTask(task);
@@ -82,7 +101,7 @@ function Tasks() {
           });
           if (res.data.success) {
             toast.success(res.data.message);
-            await fetchAllApplicants();
+            await fetchAllTasks();
           }
         } catch (error) {
           toast.error(error.response?.data?.message || "An error occurred");
@@ -98,45 +117,54 @@ function Tasks() {
   };
 
   useEffect(() => {
-    fetchAllApplicants();
+    fetchAllTasks();
   }, []);
+
+  useEffect(() => {
+    if (type === "create") setActivePanel("create-task");
+    if (type === "show") setActivePanel("show-tasks");
+    if (type === "edit") {
+      setActivePanel("edit-task");
+      if (taskId) fetchATask(taskId);
+    }
+  }, [type, taskId]);
 
   const pendingTasks = tasks.filter((task) => task.status === "Pending");
   const completedTasks = tasks.filter((task) => task.status === "Completed");
 
   return (
-    <div>
-      <div className="text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:text-gray-400 dark:border-gray-700 mb-2">
+    <div className="p-6 bg-gray-50 dark:bg-gray-900 min-h-screen">
+      {/* <div className="text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:text-gray-400 dark:border-gray-700 mb-4">
         <ul className="flex flex-wrap -mb-px">
-          <li className="me-2">
+          <li className="mr-4">
             <button
               onClick={() => {
                 setActivePanel("create-task");
                 setActiveTask(null);
               }}
-              className={
+              className={`${
                 activePanel === "create-task" ? activeTabCn : inActiveTabCn
-              }
+              } transition-colors duration-200`}
             >
-              create task
+              Create Task
             </button>
           </li>
-          <li className="me-2">
+          <li className="mr-4">
             <button
               onClick={() => setActivePanel("show-tasks")}
-              className={
+              className={`${
                 activePanel === "show-tasks" ? activeTabCn : inActiveTabCn
-              }
+              } transition-colors duration-200`}
             >
-              show tasks
+              Show Tasks
             </button>
           </li>
         </ul>
-      </div>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      </div> */}
+      <div className=" gap-6">
         {activePanel === "create-task" && (
-          <div className="bg-white shadow-md p-4 rounded-lg">
-            <h2 className="text-xl font-bold mb-4">
+          <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6">
+            <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-100 mb-4">
               {activeTask ? "Edit Task" : "Create Task"}
             </h2>
             <CreateTask
@@ -146,26 +174,29 @@ function Tasks() {
             />
           </div>
         )}
-        {/* Current and Completed Tasks */}
         {activePanel === "show-tasks" && (
-          <div className="bg-white shadow-md p-4 rounded-lg">
-            <h2 className="text-xl font-bold mb-4">Current Tasks</h2>
-            <TaskList
-              tasks={pendingTasks}
-              isLoading={isLoading}
-              handleTask={handleTask}
-            />
-          </div>
-        )}
-        {activePanel === "show-tasks" && (
-          <div className="bg-white shadow-md p-4 rounded-lg">
-            <h2 className="text-xl font-bold mb-4">Completed Tasks</h2>
-            <TaskList
-              tasks={completedTasks}
-              isLoading={isLoading}
-              handleTask={handleTask}
-            />
-          </div>
+          <>
+            <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6">
+              <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-100 mb-4">
+                Current Tasks
+              </h2>
+              <TaskList
+                tasks={pendingTasks}
+                isLoading={isLoading}
+                handleTask={handleTask}
+              />
+            </div>
+            <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6">
+              <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-100 mb-4">
+                Completed Tasks
+              </h2>
+              <TaskList
+                tasks={completedTasks}
+                isLoading={isLoading}
+                handleTask={handleTask}
+              />
+            </div>
+          </>
         )}
       </div>
     </div>

@@ -10,25 +10,25 @@ const TaskCard = ({ task, isLoading, handleTask }) => {
     switch (priority) {
       case "High":
         return (
-          <span className="px-2 py-1 text-sm font-medium text-white bg-red-600 rounded-full">
+          <span className="text-xs font-medium text-white bg-red-600 rounded-full px-2 py-1">
             High
           </span>
         );
       case "Medium":
         return (
-          <span className="px-2 py-1 text-sm font-medium text-white bg-orange-400 rounded-full">
+          <span className="text-xs font-medium text-white bg-orange-400 rounded-full px-2 py-1">
             Medium
           </span>
         );
       case "Low":
         return (
-          <span className="px-2 py-1 text-sm font-medium text-white bg-green-500 rounded-full">
+          <span className="text-xs font-medium text-white bg-green-500 rounded-full px-2 py-1">
             Low
           </span>
         );
       default:
         return (
-          <span className="px-2 py-1 text-sm font-medium text-white bg-gray-400 rounded-full">
+          <span className="text-xs font-medium text-white bg-gray-400 rounded-full px-2 py-1">
             Unknown
           </span>
         );
@@ -36,66 +36,56 @@ const TaskCard = ({ task, isLoading, handleTask }) => {
   };
 
   return (
-    <div className="w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-      <div className="relative flex justify-end px-4 pt-4">
+    <div className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 ease-in-out p-3">
+      <div className="relative mb-6">
         <button
-          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
+          className="absolute top-0 left-0 text-xs bg-gray-100 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full px-2 py-1"
           onClick={() => handleTask("edit-task", task)}
         >
           Edit
         </button>
         <button
-          className="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
+          className="absolute top-0 right-0 text-xs text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full px-2 py-1 ml-8"
           onClick={() => handleTask("delete-task", task)}
         >
           Delete
         </button>
       </div>
-      <div className="flex flex-col items-center pb-10 px-6">
-        <h5 className="mb-1 text-xl font-medium text-gray-900 dark:text-white">
+      <div className="text-sm mb-2">
+        <h5 className="text-base font-medium text-gray-900 dark:text-white mb-1">
           {task.title}
         </h5>
-        <span className="text-sm text-gray-500 dark:text-gray-400">
+        <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
           {task.description}
-        </span>
+        </p>
 
         {/* Priority Badge */}
-        <div className="mt-2">{getPriorityBadge(task.priority)}</div>
+        <div className="mb-2">{getPriorityBadge(task.priority)}</div>
 
         {/* Assignees */}
-        <div className="mt-2">
-          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-            Assigned to:{" "}
-          </span>
-          <span className="text-sm text-gray-500 dark:text-gray-400">
-            {task.assignees.join(", ")}
-          </span>
+        <div className="mb-1 text-xs text-gray-600 dark:text-gray-400">
+          <span className="font-medium">Assigned to:</span>{" "}
+          {task.assignees.join(", ")}
         </div>
 
         {/* Deadline */}
-        <div className="mt-2">
-          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-            Deadline:{" "}
-          </span>
-          <span className="text-sm text-gray-500 dark:text-gray-400">
-            {new Date(task.deadline).toLocaleDateString()}
-          </span>
+        <div className="mb-2 text-xs text-gray-600 dark:text-gray-400">
+          <span className="font-medium">Deadline:</span>{" "}
+          {new Date(task.deadline).toLocaleDateString()}
         </div>
 
         {/* Task Status and Action Button */}
-        <div className="flex mt-4 md:mt-6">
-          <button
-            disabled={isLoading === task._id}
-            onClick={() => handleTask("toggle-status", task)}
-            className={
-              task.status === "Completed"
-                ? "inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-                : "py-2 px-4 ms-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
-            }
-          >
-            {task.status === "Pending" ? "Mark Complete" : "Completed"}
-          </button>
-        </div>
+        <button
+          disabled={isLoading === task._id}
+          onClick={() => handleTask("toggle-status", task)}
+          className={`w-full text-xs font-medium py-1 px-3 rounded-lg transition-colors duration-200 ease-in-out focus:outline-none ${
+            task.status === "Completed"
+              ? "bg-blue-600 text-white hover:bg-blue-700"
+              : "bg-transparent border border-gray-300 text-gray-600 hover:bg-gray-100 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
+          }`}
+        >
+          {task.status === "Pending" ? "Mark Complete" : "Reopen"}
+        </button>
       </div>
     </div>
   );
