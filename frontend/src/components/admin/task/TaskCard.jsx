@@ -1,8 +1,10 @@
 import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { useSelector } from "react-redux";
 
 const TaskCard = ({ task, isLoading, handleTask }) => {
+  const isAdmin = useSelector((state) => state.auth.user?.role === "admin");
   const [buttonText, setButtonText] = useState("Mark Complete");
   const navigate = useNavigate();
 
@@ -60,20 +62,22 @@ const TaskCard = ({ task, isLoading, handleTask }) => {
         >
           Details
         </button>
-        <div className="flex space-x-2">
-          <button
-            onClick={() => handleTask("edit-task", task)}
-            className="text-xs text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 px-3 py-1 rounded focus:outline-none"
-          >
-            Edit
-          </button>
-          <button
-            onClick={() => handleTask("delete-task", task)}
-            className="text-xs text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 px-3 py-1 rounded focus:outline-none"
-          >
-            Delete
-          </button>
-        </div>
+        {isAdmin && (
+          <div className="flex space-x-2">
+            <button
+              onClick={() => handleTask("edit-task", task)}
+              className="text-xs text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 px-3 py-1 rounded focus:outline-none"
+            >
+              Edit
+            </button>
+            <button
+              onClick={() => handleTask("delete-task", task)}
+              className="text-xs text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 px-3 py-1 rounded focus:outline-none"
+            >
+              Delete
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Status Action */}

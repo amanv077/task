@@ -1,5 +1,6 @@
 import { TASK_API_END_POINT, USER_API_END_POINT } from "@/utils/constant";
 import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 
 const emptyTaskData = {
   title: "",
@@ -15,6 +16,7 @@ function formatDateForInput(dateString) {
 }
 
 const CreateTask = ({ defaultTask, handleTask, handlerShowTaskList }) => {
+  const isAdmin = useSelector((state) => state.auth.user?.role === "admin");
   const [task, setTask] = useState(defaultTask || emptyTaskData);
   const [teamMembers, setTeamMembers] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -61,7 +63,7 @@ const CreateTask = ({ defaultTask, handleTask, handlerShowTaskList }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (defaultTask) {
-      handleTask("update-task", { ...defaultTask, ...task });
+      return handleTask("update-task", { ...defaultTask, ...task });
     }
 
     try {
@@ -70,6 +72,7 @@ const CreateTask = ({ defaultTask, handleTask, handlerShowTaskList }) => {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
         body: JSON.stringify(task),
       });
       const data = await response.json();
@@ -114,6 +117,7 @@ const CreateTask = ({ defaultTask, handleTask, handlerShowTaskList }) => {
             placeholder="Enter task title"
             className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200"
             required
+            disabled={!isAdmin}
           />
         </div>
 
@@ -128,6 +132,7 @@ const CreateTask = ({ defaultTask, handleTask, handlerShowTaskList }) => {
             onChange={handleChange}
             className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200"
             required
+            disabled={!isAdmin}
           />
         </div>
 
@@ -143,6 +148,7 @@ const CreateTask = ({ defaultTask, handleTask, handlerShowTaskList }) => {
             className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200"
             rows="4"
             required
+            disabled={!isAdmin}
           ></textarea>
         </div>
 
@@ -160,6 +166,7 @@ const CreateTask = ({ defaultTask, handleTask, handlerShowTaskList }) => {
               onChange={handleAssigneesChange}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200"
               required
+              disabled={!isAdmin}
             >
               {teamMembers.map((member) => (
                 <option key={member} value={member}>
@@ -183,6 +190,7 @@ const CreateTask = ({ defaultTask, handleTask, handlerShowTaskList }) => {
             onChange={handleChange}
             className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200"
             required
+            disabled={!isAdmin}
           >
             {priorities.map((priority) => (
               <option key={priority.value} value={priority.value}>
@@ -196,6 +204,7 @@ const CreateTask = ({ defaultTask, handleTask, handlerShowTaskList }) => {
       <div className="mt-6 flex justify-end">
         <button
           type="submit"
+          disabled={!isAdmin}
           className="px-6 py-2 text-sm font-semibold text-white bg-blue-600 rounded-lg shadow-md hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 focus:ring-2 focus:ring-blue-500"
         >
           {defaultTask ? "Edit Task" : "Create Task"}

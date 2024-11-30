@@ -25,10 +25,16 @@ export const createTask = async (req, res) => {
   }
 };
 
-// Get all tasks
 export const getTasks = async (req, res) => {
   try {
-    const tasks = await Task.find();
+    let tasks;
+
+    if (req.isAdmin) {
+      tasks = await Task.find();
+    } else {
+      tasks = await Task.find({ assignees: { $in: [req.user.fullname] } });
+    }
+
     res.status(200).json({ success: true, tasks });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -52,8 +58,11 @@ export const getTaskById = async (req, res) => {
 
 // Update a task
 export const updateTask = async (req, res) => {
+  let body = {};
+  if (req.isAdmin) body = req.body;
+  else body.status = req.body.status;
   try {
-    const updatedTask = await Task.findByIdAndUpdate(req.params.id, req.body, {
+    const updatedTask = await Task.findByIdAndUpdate(req.params.id, body, {
       new: true,
       runValidators: true,
     });

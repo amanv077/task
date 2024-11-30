@@ -26,17 +26,11 @@ const isAuthenticated = async (req, res, next) => {
 
     // Fetch the user from the database using the user ID from the token
     const user = await User.findById(req.id);
+    req.user = user;
+    req.isAdmin = user.role === "admin";
     if (!user) {
       return res.status(404).json({
         message: "User not found.",
-        success: false,
-      });
-    }
-
-    // Check if the user has an admin role
-    if (user.role !== "admin") {
-      return res.status(403).json({
-        message: "User not authorized. Admin role required.",
         success: false,
       });
     }

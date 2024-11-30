@@ -53,8 +53,7 @@ app.use("/api/v1/company", companyRoute);
 app.use("/api/v1/job", jobRoute);
 app.use("/api/v1/application", applicationRoute);
 app.use("/api/v1/students", studentsRoute);
-app.use("/api/tasks", taskRoutes);
-app.use("/api/v1/tasks", taskRoutes); // Add the taskRoutes
+app.use("/api/v1/tasks", taskRoutes);
 
 // Catch-All Route for Undefined Routes
 app.use((req, res) => {
