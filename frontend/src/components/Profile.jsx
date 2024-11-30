@@ -1,11 +1,10 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Avatar, AvatarImage } from "./ui/avatar";
 import { Button } from "./ui/button";
 import { Pen, Check } from "lucide-react";
 import { Input } from "./ui/input";
 import { Badge } from "./ui/badge";
 import { Label } from "./ui/label";
-import AppliedJobTable from "./AppliedJobTable";
 import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
 import { USER_API_END_POINT } from "@/utils/constant";
@@ -185,7 +184,7 @@ const Profile = () => {
               )}
             </div>
             <div>
-              <Label>Father's Name</Label>
+              <Label>Fathers Name</Label>
               {isEditing ? (
                 <Input
                   name="fatherName"
