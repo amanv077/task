@@ -7,8 +7,8 @@ const UserDashboard = () => {
       <UserSidebar />
 
       <div className="flex flex-col flex-grow">
-        <div className="bg-white shadow p-4 flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-gray-800">User Dashboard</h1>
+        <div className="bg-white shadow p-4 flex items-center justify-end">
+          {/* <h1 className="text-2xl font-bold text-gray-800">User Dashboard</h1> */}
           <button className="bg-blue-600 text-white px-4 py-2 rounded-md shadow hover:bg-blue-700 transition">
             Add New Task
           </button>

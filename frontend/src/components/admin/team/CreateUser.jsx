@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { USER_API_END_POINT } from "@/utils/constant";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const CreateUser = () => {
   const [fullname, setFullname] = useState("");
@@ -12,6 +13,15 @@ const CreateUser = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const userRole = useSelector((state) => state.auth.user?.role);
+
+  const handleBackClick = () => {
+    if (userRole === "admin") {
+      navigate("/admin-dashboard");
+    } else {
+      navigate("/user-dashboard");
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -54,6 +64,30 @@ const CreateUser = () => {
 
   return (
     <div className="max-w-lg mx-auto bg-white shadow-lg rounded-lg p-6 mt-10">
+      {/* Back Button */}
+      <div className="mb-6">
+        <button
+          onClick={handleBackClick}
+          className="flex items-center text-blue-600 hover:text-blue-700 transition font-medium"
+        >
+          <svg
+            className="w-5 h-5 mr-2"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M15 19l-7-7 7-7"
+            />
+          </svg>
+          Back
+        </button>
+      </div>
+
       <h2 className="text-2xl font-bold text-gray-800 mb-6">Create New User</h2>
       <form onSubmit={handleSubmit} className="space-y-5">
         <div>

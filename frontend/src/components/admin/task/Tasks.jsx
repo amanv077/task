@@ -55,13 +55,16 @@ function Tasks({ type }) {
     }
   };
 
-  const updateTask = async (task) => {
+  const updateTask = async (task, type) => {
+    const toggleStatus = type === "toggle-status";
     try {
       const res = await axios.put(
         `${TASK_API_END_POINT}/${task._id}`,
         {
           ...task,
-          status: task.status === "Pending" ? "Completed" : "Pending",
+          ...(toggleStatus && {
+            status: task.status === "Pending" ? "Completed" : "Pending",
+          }),
         },
         {
           withCredentials: true,
@@ -90,7 +93,7 @@ function Tasks({ type }) {
       case "update-task":
       case "toggle-status": {
         setIsLoading(task._id);
-        await updateTask(task);
+        await updateTask(task, type);
         break;
       }
       case "delete-task": {
@@ -133,35 +136,8 @@ function Tasks({ type }) {
   const completedTasks = tasks.filter((task) => task.status === "Completed");
 
   return (
-    <div className="p-6 bg-white dark:bg-gray-900 min-h-screen">
-      {/* <div className="text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:text-gray-400 dark:border-gray-700 mb-4">
-        <ul className="flex flex-wrap -mb-px">
-          <li className="mr-4">
-            <button
-              onClick={() => {
-                setActivePanel("create-task");
-                setActiveTask(null);
-              }}
-              className={`${
-                activePanel === "create-task" ? activeTabCn : inActiveTabCn
-              } transition-colors duration-200`}
-            >
-              Create Task
-            </button>
-          </li>
-          <li className="mr-4">
-            <button
-              onClick={() => setActivePanel("show-tasks")}
-              className={`${
-                activePanel === "show-tasks" ? activeTabCn : inActiveTabCn
-              } transition-colors duration-200`}
-            >
-              Show Tasks
-            </button>
-          </li>
-        </ul>
-      </div> */}
-      <div className=" gap-6">
+    <div className="bg-white dark:bg-gray-900 min-h-screen">
+      <div className="">
         {activePanel === "create-task" && (
           <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6">
             <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-100 mb-4">
@@ -180,21 +156,38 @@ function Tasks({ type }) {
               <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-100 mb-4">
                 Current Tasks
               </h2>
-              <TaskList
-                tasks={pendingTasks}
-                isLoading={isLoading}
-                handleTask={handleTask}
-              />
+              {pendingTasks.length > 0 ? (
+                <TaskList
+                  tasks={pendingTasks}
+                  isLoading={isLoading}
+                  handleTask={handleTask}
+                />
+              ) : (
+                <div className="flex items-center justify-center p-6 text-center text-gray-600 dark:text-gray-400">
+                  <p className="text-lg">
+                    🎉 No pending tasks! Take a break or create a new one.
+                  </p>
+                </div>
+              )}
             </div>
             <div className="bg-gray-100 dark:bg-gray-800 shadow-lg rounded-lg p-6 mt-5">
               <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-100 mb-4">
                 Completed Tasks
               </h2>
-              <TaskList
-                tasks={completedTasks}
-                isLoading={isLoading}
-                handleTask={handleTask}
-              />
+              {completedTasks.length > 0 ? (
+                <TaskList
+                  tasks={completedTasks}
+                  isLoading={isLoading}
+                  handleTask={handleTask}
+                />
+              ) : (
+                <div className="flex items-center justify-center p-6 text-center text-gray-600 dark:text-gray-400">
+                  <p className="text-lg">
+                    ✅ No completed tasks yet. Finish some tasks and see them
+                    here!
+                  </p>
+                </div>
+              )}
             </div>
           </>
         )}

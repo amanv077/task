@@ -38,7 +38,7 @@ console.log(process.env);
 // Root Route (for quick API health check)
 app.get("/", (req, res) => {
   res.json({
-    message: "Welcome to the Hiring Booth API!",
+    message: "Welcome to the Task ManagerAPI!",
     success: true,
   });
 });

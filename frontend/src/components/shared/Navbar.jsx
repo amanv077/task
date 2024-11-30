@@ -13,7 +13,6 @@ const Navbar = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  // Log out handler
   const logoutHandler = async () => {
     try {
       const res = await axios.get(`${USER_API_END_POINT}/logout`, {
@@ -29,7 +28,6 @@ const Navbar = () => {
     }
   };
 
-  // Handle header click based on user role
   const handleHeaderClick = () => {
     if (!user) {
       navigate("/");
@@ -41,79 +39,91 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-white shadow-sm sticky top-0 z-50">
-      <div className="flex items-center justify-between max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16">
+    <nav className="bg-white dark:bg-gray-900 shadow-sm sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         {/* Logo */}
         <div>
           <h1
             onClick={handleHeaderClick}
-            className="text-3xl font-bold tracking-tight text-blue-600 dark:text-blue-400 flex items-center space-x-2 cursor-pointer"
+            className="text-2xl font-bold tracking-tight text-blue-600 dark:text-blue-400 flex items-center gap-2 cursor-pointer"
           >
-            <span className="bg-blue-600 text-white px-2 py-1 rounded-md shadow-lg dark:bg-blue-500">
+            <span className="bg-blue-600 text-white px-3 py-1 rounded-lg shadow-md dark:bg-blue-500">
               Task
             </span>
             <span className="text-gray-800 dark:text-gray-200">Manager</span>
           </h1>
         </div>
 
-        {/* Menu */}
-        <div className="flex items-center gap-8">
-          <ul className="flex items-center gap-6 text-[#004aad] font-semibold">
-            {/* Role-based Links */}
+        {/* Navigation */}
+        <div className="flex items-center gap-6">
+          <ul className="hidden md:flex items-center gap-6 text-blue-600 font-medium">
             {user && user.role === "admin" ? (
               <>
                 <li>
-                  <Link to="/admin-dashboard" className="hover:text-[#003b8d]">
+                  <Link
+                    to="/admin-dashboard"
+                    className="hover:text-blue-800 dark:hover:text-blue-300 transition-colors"
+                  >
                     Admin Dashboard
                   </Link>
                 </li>
                 <li>
-                  <Link to="/create-task" className="hover:text-[#003b8d]">
+                  <Link
+                    to="/create-task"
+                    className="hover:text-blue-800 dark:hover:text-blue-300 transition-colors"
+                  >
                     Create Task
                   </Link>
                 </li>
               </>
             ) : user && user.role === "user" ? (
               <li>
-                <Link to="/user-dashboard" className="hover:text-[#003b8d]">
+                <Link
+                  to="/user-dashboard"
+                  className="hover:text-blue-800 dark:hover:text-blue-300 transition-colors"
+                >
                   User Dashboard
                 </Link>
               </li>
             ) : null}
           </ul>
 
-          {/* Auth Buttons */}
+          {/* Authentication */}
           <div className="flex items-center gap-4">
             {!user ? (
               <>
                 <Link to="/login">
                   <Button
                     variant="outline"
-                    className="border-[#004aad] text-[#004aad] hover:bg-[#004aad] hover:text-white"
+                    className="border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white transition-colors"
                   >
                     Login
                   </Button>
                 </Link>
                 <Link to="/signup">
-                  <Button className="bg-[#004aad] hover:bg-[#003b8d] text-white">
+                  <Button className="bg-blue-600 hover:bg-blue-700 text-white transition-colors">
                     Signup
                   </Button>
                 </Link>
               </>
             ) : (
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-3">
                 <Avatar className="cursor-pointer">
                   <AvatarImage
-                    src={user?.profile?.profilePhoto}
+                    src={user?.profile?.profilePhoto || "/default-avatar.png"}
                     alt="User Profile"
                   />
                 </Avatar>
-                <div className="flex flex-col text-sm">
-                  <h4 className="font-medium">{user?.fullname}</h4>
-                  <p className="text-gray-500">{user?.profile?.bio}</p>
+                <div className="hidden sm:block text-sm">
+                  <h4 className="font-medium text-gray-800 dark:text-gray-100">
+                    {user?.fullname}
+                  </h4>
+                  <p className="text-gray-500 dark:text-gray-400">
+                    {user?.profile?.bio || "No bio available"}
+                  </p>
                 </div>
                 <button
-                  className="text-red-500 font-semibold hover:text-red-600"
+                  className="text-red-600 font-medium hover:text-red-700 transition-colors"
                   onClick={logoutHandler}
                 >
                   <LogOut className="inline-block mr-1" />
